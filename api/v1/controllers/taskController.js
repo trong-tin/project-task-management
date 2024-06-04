@@ -1,6 +1,6 @@
 const Task = require("../models/taskModel");
 const paginationHelper = require("../../../helpers/paginationHelper");
-
+const searchHelper = require("../../../helpers/searchHelper");
 //[GET] /api/v1/tasks
 module.exports.index = async (req, res) => {
   try {
@@ -16,7 +16,7 @@ module.exports.index = async (req, res) => {
     // PAGINATION
     let initPagination = {
       currentPage: 1,
-      limitItems: 1,
+      limitItems: 2,
     };
     const countTasks = await Task.countDocuments(find);
     const objectPagination = paginationHelper(
@@ -33,6 +33,12 @@ module.exports.index = async (req, res) => {
     }
     // END SORT
 
+    // SEARCH
+    const objectSearch = searchHelper(req.query);
+    if (req.query.keyword) {
+      find.title = objectSearch.regex;
+    }
+    // END SEARCH
     const task = await Task.find(find)
       .sort(sort)
       .limit(objectPagination.limitItems)
@@ -54,5 +60,30 @@ module.exports.detail = async (req, res) => {
     res.json(task);
   } catch (error) {
     res.json("Không tìm thấy");
+  }
+};
+
+//[PATCH] /api/v1/tasks/change-status/:id
+module.exports.changeStatus = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const status = req.body.status;
+    await Task.updateOne(
+      {
+        _id: id,
+      },
+      {
+        status: status,
+      }
+    );
+    res.json({
+      code: 200,
+      message: "Cập nhật trạng thái thành công",
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Cập nhật trạng thái không thành công",
+    });
   }
 };
