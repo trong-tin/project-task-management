@@ -8,6 +8,7 @@ module.exports.index = async (req, res) => {
     // FIND
     const find = {
       deleted: false,
+      $or: [{ createBy: req.user.id }, { listUser: req.user.id }],
     };
     if (req.query.status) {
       find.status = req.query.status;
