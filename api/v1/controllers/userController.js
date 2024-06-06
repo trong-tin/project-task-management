@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const ForgotPassword = require("../models/forgotPasswordModel");
 const generateHelper = require("../../../helpers/generate");
 const sendEmailHelper = require("../../../helpers/sendMail");
+const generate = require("../../../helpers/generate");
 // [POST] /api/v1/users/register
 module.exports.register = async (req, res) => {
   try {
@@ -21,6 +22,7 @@ module.exports.register = async (req, res) => {
         fullName: req.body.fullName,
         email: req.body.email,
         password: req.body.password,
+        token: generate.generateRandomNumber(20),
       });
       user.save();
       const token = user.token;
@@ -88,7 +90,7 @@ module.exports.forgotPassword = async (req, res) => {
       const objectForgotPassword = {
         email,
         otp,
-        expireAt: Date.now() + timeExpire * 60,
+        expireAt: Date.now() + timeExpire * 60 * 1000,
       };
       const forgotPassword = await new ForgotPassword(objectForgotPassword);
       forgotPassword.save();
