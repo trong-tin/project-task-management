@@ -140,3 +140,22 @@ module.exports.create = async (req, res) => {
     });
   }
 };
+
+//[PATCH] /api/v1/tasks/edit/:id
+module.exports.edit = async (req, res) => {
+  try {
+    const data = req.body;
+    const id = req.params.id;
+    await Task.updateOne({ _id: id }, data);
+    res.json({
+      code: 200,
+      message: "Cập nhật thành công",
+      data: data,
+    });
+  } catch {
+    res.json({
+      code: 400,
+      message: "Lỗi",
+    });
+  }
+};
