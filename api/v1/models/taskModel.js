@@ -3,7 +3,8 @@ const taskSchema = new mongoose.Schema(
   {
     title: String,
     createBy: String,
-    listUser :Array,
+    listUser: Array,
+    taskParentId: String,
     status: String,
     content: String,
     timeStart: Date,

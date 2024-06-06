@@ -142,6 +142,18 @@ module.exports.changeMulti = async (req, res) => {
 //[POST] /api/v1/tasks/create
 module.exports.create = async (req, res) => {
   try {
+    const existTask = await Task.findOne({
+      _id: req.body.taskParentId,
+      deleted: false,
+      $or: [{ createBy: req.user.id }, { listUser: req.user.id }],
+    });
+    if (!existTask) {
+      res.json({
+        code: 400,
+        message: "Không tìm thấy task cha",
+      });
+      return;
+    }
     req.body.createBy = req.user.id;
     const task = new Task(req.body);
     const data = await task.save();
